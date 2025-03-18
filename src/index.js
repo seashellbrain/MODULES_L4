@@ -1,21 +1,36 @@
-const hashPasswords = require("./libs/bcrypt");
+const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
 
+dotenv.config({ path: `.env.${process.env.NODE_ENV || "development"}` });
+
+console.log(`Текущий режим работы: ${process.env.MODE || "Не указан"}`);
+console.log(`Загружен файл окружения: .env.${process.env.NODE_ENV || "development"}`);
+console.log("Начинаем процесс хеширования паролей...\n");
+
+// Генерация массива паролей
 const passwords = Array.from({ length: 13 }, (_, i) => `password${i}`);
 
-hashPasswords(passwords).then((results) => {
-    results.forEach(({ password, hashed, time }) =>
-        console.log(`Пароль: ${password}, Хеш: ${hashed}, Время: ${time}ms`)
-    );
-});
-const dotenv = require("dotenv");
-const path = `.env.${process.env.NODE_ENV || "development"}`;
-
-const result = dotenv.config({ path });
-
-if (result.error) {
-    console.error("Ошибка загрузки .env файла:", result.error);
-} else {
-    console.log("Файл .env загружен успешно:", path);
+// Функция хеширования одного пароля
+async function hashPassword(password) {
+    const startTime = Date.now();
+    const hashed = await bcrypt.hash(password, 10);
+    return { password, hashed, time: Date.now() - startTime };
 }
 
-console.log(`Текущий режим работы: ${process.env.MODE}`);
+// Функция обработки всех паролей
+async function processPasswords() {
+    const start = Date.now();
+    const results = await Promise.all(passwords.map(hashPassword));
+
+    results.forEach(({ password, hashed, time }) => {
+        console.log(`Пароль: ${password}`);
+        console.log(`Хеш: ${hashed}`);
+        console.log(`Время хеширования: ${time}ms\n`);
+    });
+
+    console.log("Общее время хеширования:", Date.now() - start, "мс");
+    console.log("bcrypt использует алгоритм Blowfish, который требует вычислительных ресурсов.");
+    console.log("Чем больше раундов соли, тем дольше время обработки.");
+}
+
+processPasswords();
