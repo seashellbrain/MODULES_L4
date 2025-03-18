@@ -7,17 +7,15 @@ console.log(`Текущий режим работы: ${process.env.MODE || "Не
 console.log(`Загружен файл окружения: .env.${process.env.NODE_ENV || "development"}`);
 console.log("Начинаем процесс хеширования паролей...\n");
 
-// Генерация массива паролей
+
 const passwords = Array.from({ length: 13 }, (_, i) => `password${i}`);
 
-// Функция хеширования одного пароля
 async function hashPassword(password) {
     const startTime = Date.now();
     const hashed = await bcrypt.hash(password, 10);
     return { password, hashed, time: Date.now() - startTime };
 }
 
-// Функция обработки всех паролей
 async function processPasswords() {
     const start = Date.now();
     const results = await Promise.all(passwords.map(hashPassword));
