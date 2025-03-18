@@ -4,11 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-      "dev": "nodemon src/index.js",
-      "build": "MODE=production node src/index.js",
-      "start": "MODE=development node src/index.js",
-      "deploy": "MODE=domain node src/index.js"
-      
+    "dev": "nodemon src/index.js",
+    "build": " cross-env NODE_ENV=production node src/index.js",
+    "start": " cross-env NODE_ENV=development node src/index.js",
+    "deploy": "cross-env NODE_ENV=domain node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +19,8 @@
     "dotenv": "^16.4.7",
     "fs": "^0.0.1-security",
     "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
